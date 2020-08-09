@@ -1,0 +1,145 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login !</title>
+    <link rel="stylesheet" href="{% static 'css/style.css'%}">
+</head>
+<body>
+    <div class="login-top-img">
+        <p class="logo">OpNoob</p>
+    </div>
+    {% for m in messages %}
+    <p style="text-align: center;font-size: 2rem;">{{m}}</p>
+    {%endfor %}
+    <div class="login-register-container">
+        <div class="switch-div login">
+            <div class="login-thought"><p>Focus on the work that matters</p>
+                <p class="login-thought-small-text">The only thing that matters is your passion <br> <span id="login-switch-text">Login</span> and head towards your passion</p>
+                <button onclick="loginswitch()" class="login-switch-button" id="login-switch-button">Register !</button>
+            </div>            
+        </div>
+        <div class="login-div">
+            <div class="login-box">
+                <form action="/account/login" method="POST">
+                    {%csrf_token %}
+                    <div class="input-div">
+                        <input type="text" name="username" autocomplete="off" required>
+                        <label for="username"><span class="label-span">Username</span></label>
+                    </div>
+                    <div class="input-div">
+                        <input type="password" name="password" autocomplete="off" required>
+                        <label for="username"><span class="label-span">Password</span></label>
+                    </div>
+                    <input type="submit" value="Login !" class="login-button">
+                </form>
+                <hr style="margin: 10px auto; width: 80%;">
+                <p style="text-align: center;margin: 20px;">New to OpNoob ? <a href="#" class="login-switch-button" onclick="loginswitch()">Register</a></p>
+            </div>
+        </div>
+        <div class="register-div hide">
+            <p style="text-align: center;">Fill the details to register !</p>
+            <form action="/account/register" method="POST" onsubmit="return validate(this.password1.value,this.password2.value,this.username.value)">
+                {%csrf_token %}
+                <div style="display: flex;">
+                <div class="input-div">
+                    <input type="text" name="fname" autocomplete="off" required>
+                    <label for="fname"><span class="label-span">First Name</span></label>
+                </div>
+                <div class="input-div">
+                    <input type="text" name="lname" autocomplete="off" required>
+                    <label for="lname"><span class="label-span">Last Name</span></label>
+                </div>
+                </div>
+                <div class="input-div">
+                    <input type="text" name="username" autocomplete="off" required onfocusout="checkforavailableusername(this.value)">
+                    <label for="username"><span class="label-span">Username</span></label>
+                </div>
+                <div id="username-status">
+                
+                </div>
+                <div class="input-div">
+                    <input type="password" name="password1" id="password1" autocomplete="off" required>
+                    <label for="password"><span class="label-span" id="password2" >Password</span></label>
+                </div>
+                <div class="input-div">
+                    <input type="password" name="password2" autocomplete="off" required>
+                    <label for="password"><span class="label-span">Re-Password</span></label>
+                </div>
+                <div id="password-status"></div>
+                <div class="input-div">
+                    <input type="text" name="email" autocomplete="off" required>
+                    <label for="email"><span class="label-span">E-Mail</span></label>
+                </div>
+                <button type="submit" class="register-form-submit">Register</button>
+            </form>
+            <p style="text-align: center;margin: 20px;">Already have an account ? <a href="#" class="login-switch-button" onclick="loginswitch()">Login</a></p>
+        </div>
+    </div>
+    <script>
+        var loginswitchbutton=document.getElementsByClassName("login-switch-button");
+        var logindiv = document.getElementsByClassName("login-div")[0];
+        var registerdiv = document.getElementsByClassName("register-div")[0];
+        var switchdiv=document.getElementsByClassName("switch-div");
+        var loginswitchtext = document.getElementById("login-switch-text");
+        var loginregistercontainer = document.getElementsByClassName("login-register-container")[0];
+        function loginswitch(){
+    
+            if (loginswitchbutton[0].innerText == "Register !" || loginswitchbutton[1].innerText == "Register"){
+                switchdiv[0].classList.remove("login");
+                switchdiv[0].classList.add("register");
+                loginswitchbutton[0].innerText="Login in !";
+                loginregistercontainer.classList.toggle("register");
+                logindiv.classList.toggle("hide");
+                loginswitchbutton[1].innerText = "Registert"
+                registerdiv.classList.toggle("hide");
+                loginswitchtext.innerText="Register";
+            }
+            else{
+                loginregistercontainer.classList.toggle("register");
+                switchdiv[0].classList.remove("register");
+                switchdiv[0].classList.add("login");
+                loginswitchbutton[0].innerText="Register !";
+                logindiv.classList.toggle("hide");
+                loginswitchbutton[1].innerText = "Register"
+                registerdiv.classList.toggle("hide");
+                loginswitchtext.innerText="Login";
+            }
+            
+        }
+        function checkforavailableusername(value){
+            xml=new XMLHttpRequest();
+            console.log(value)
+            xml.open("GET",'/ajex/account/register/'+value,true);
+            xml.onload=function(){
+                if (this.status==200){
+                    if(this.responseText=="username is not available"){
+                        document.getElementById("username-status").innerHTML= '<span style="color: red;">'+this.responseText +'</span>'
+                    }else{
+                        document.getElementById("username-status").innerHTML= '<span style="color: green;">'+this.responseText +'</span>'
+                    }
+                    
+                }
+            }
+            xml.send()
+        }
+        function validate(a,b,c){
+            if(c>15){
+                alert("username should be less then 16 character");
+                return false;
+            }
+            else if(a!=b){
+                document.getElementById("password-status").innerHTML='<span style="color: red;">password did not matched !</span>';
+                return false;
+            }else if(document.getElementById("username-status").innerHTML=="username is not available"){
+                alert("username is not available");
+                return false;
+            }else{
+                return true;
+            }
+        }
+    </script>
+</body>
+</html>

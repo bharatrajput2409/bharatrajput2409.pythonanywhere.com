@@ -1,0 +1,32 @@
+{% extends 'account/base.html'%}
+{%block title%}
+<title>Home</title>
+{%endblock%}
+{% block content%}
+    <div class="home-container">
+        <div class="home-left-div">
+            <p style="text-align: center;font-weight: 600;font-size: 1.1rem;">Quick links to subject at OpNoob</p>
+            {%for subject in subjects %}               
+            <a class="home-quick-link" href="/subject/{{subject.name}}">{{subject.name}}</a>
+            {%endfor %}
+                
+        </div>
+        <div class="home-right-div">
+            <p style="text-align: center;width: 100%;">Recomended articles for you</p>
+    <div class="profile-feed-container">
+        {%for topic in topics %}
+        <div class="profile-feed-div">
+            <a href="/subject/{{topic.article.subject}}/{{topic.article.id}}"><p>{{topic.article.heading}}</p></a>
+            <p>likes:{{topic.article.likes}}</p>
+            <p>Difficulty level: {{topic.article.level}}</p>
+            <div class="profile-topic-tag-links">
+                {%for tag in topic.tags%}
+                <a href="/topics/tags/{{tag.hashtag}}">{{tag.hashtag}}</a>
+                {%endfor%}
+            </div>
+        </div>
+        {%endfor%}
+    </div>
+        </div>
+    </div>
+{%endblock %}

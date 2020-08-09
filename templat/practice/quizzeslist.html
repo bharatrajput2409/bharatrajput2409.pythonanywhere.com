@@ -1,0 +1,94 @@
+{% extends 'account/base.html'%}
+{%block title%}
+<title>Quizzes</title>
+{%endblock%}
+{% block content%}
+<div class="container-practice-question">
+    {%for q in quizlist %}
+    <div class="subject-container">
+        <p style="text-transform: uppercase; margin-top: 4px;font-weight: 600;font-size: 1.3rem;">{{q.name}}</p>
+        <hr style="margin: 10px auto;width: 80%;">
+        <div class="quantity-info">
+            <p>Problems Included : {{q.total_question}} </p>
+            <p>Total attempts : {{q.attempts}} </p>
+        </div>
+        <a href="/practice/quizzes/{{q.name}}">Check out</a>
+    </div>
+    {%endfor%}
+    <div class="subject-container">
+        <p style="text-transform: uppercase;"> this quiz will be available soon </p>
+        <hr style="margin: 10px auto;width: 80%;">
+        <div class="quantity-info">
+            <p>Problems Included : 44</p>
+            <p>Total attempts : 0</p>
+        </div>
+        <a href="#">Check out</a>
+    </div>
+    <div class="subject-container">
+        <p style="text-transform: uppercase;"> this quiz will be available soon </p>
+        <hr style="margin: 10px auto;width: 80%;">
+        <div class="quantity-info">
+            <p>Problems Included : 21</p>
+            <p>Total attempts : 0</p>
+        </div>
+        <a href="#">Check out</a>
+    </div>
+    <div class="subject-container">
+        <p style="text-transform: uppercase;"> this quiz will be available soon </p>
+        <hr style="margin: 10px auto;width: 80%;">
+        <div class="quantity-info">
+            <p>Problems Included : 31</p>
+            <p>Total attempts : 0</p>
+        </div>
+        <a href="#">Check out</a>
+    </div>
+    <div class="subject-container">
+        <p style="text-transform: uppercase;"> this quiz will be available soon </p>
+        <hr style="margin: 10px auto;width: 80%;">
+        <div class="quantity-info">
+            <p>Problems Included : 34</p>
+            <p>Total attempts : 0</p>
+        </div>
+        <a href="#">Check out</a>
+    </div>
+    <div class="subject-container">
+        <p style="text-transform: uppercase;"> this quiz will be available soon </p>
+        <hr style="margin: 10px auto;width: 80%;">
+        <div class="quantity-info">
+            <p>Problems Included : 44</p>
+            <p>Total attempts : 0</p>
+        </div>
+        <a href="#">Check out</a>
+    </div>
+    <div class="subject-container">
+        <p style="text-transform: uppercase;"> this quiz will be available soon </p>
+        <hr style="margin: 10px auto;width: 80%;">
+        <div class="quantity-info">
+            <p>Problems Included : 18</p>
+            <p>Total attempts : 0</p>
+        </div>
+        <a href="#">Check out</a>
+    </div>
+    <div class="subject-container">
+        <p style="text-transform: uppercase;"> this quiz will be available soon </p>
+        <hr style="margin: 10px auto;width: 80%;">
+        <div class="quantity-info">
+            <p>Problems Included : 4</p>
+            <p>Total attempts : 0</p>
+        </div>
+        <a href="#">Check out</a>
+    </div>
+    <div class="subject-container">
+        <p style="text-transform: uppercase;"> this quiz will be available soon </p>
+        <hr style="margin: 10px auto;width: 80%;">
+        <div class="quantity-info">
+            <p>Problems Included : 24</p>
+            <p>Total attempts : 0</p>
+        </div>
+        <a href="#">Check out</a>
+    </div>
+    
+             
+</div>
+    
+{%endblock %}

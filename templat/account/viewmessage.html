@@ -1,0 +1,46 @@
+{% extends 'account/profilebase.html'%}
+
+{% block user-data-container %}
+<div class="message-view-div" style="padding: 1rem;border-radius: 1rem; width: 100%;">
+    <div class="message-view-1" style="height: 3rem;color: white;background: #1b2b40;">
+        <div class="sender" style="line-height: 3rem;border: 0;">
+            Sender
+        </div>
+        <div class="reciver" style="line-height: 3rem;border: 0;">
+            Reciver
+        </div>
+        <div class="content" style="line-height: 3rem;text-align: center;width: 10rem;;">
+            message
+        </div>
+        <div class="status"style="line-height: 3rem;border: 0;text-align: center;">
+            Date
+        </div>
+    </div>
+    {%for m in messagelist%}    
+    <div class="message-view">
+        <div class="sender">
+            {{m.sender}}
+        </div>
+        <div class="reciver">
+            {{m.reciver}}
+        </div>
+        <div class="content">
+            {{m.content}}
+        </div>
+        <div class="status">
+            <p>{{m.datetime}}</p>
+            <p class="status-para">{{m.status}}</p>
+        </div>
+    </div>
+    {%endfor%}    
+</div>
+<script>
+    var statuspara=document.getElementsByClassName("status-para");
+    for (var i in statuspara){
+        if(statuspara[i].innerHTML=="unseen"){
+            document.getElementsByClassName("message-view")[i].style.borderColor="red";
+        }
+    }
+</script>
+           
+{%endblock%}

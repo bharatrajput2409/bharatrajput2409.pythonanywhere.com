@@ -1,0 +1,23 @@
+{% extends 'account/profilebase.html'%}
+
+{% block user-data-container %}
+<p style="text-align: center;width: 100%;">Articles contributed by {{user1.username}} | Contribution score: {{user2.contribution}}</p>
+    <div class="profile-feed-container">
+        {%if articlelist%}
+        {%for temp in articlelist %}
+        <div class="profile-feed-div">
+            <p>{{temp.article.heading}}</p>
+            <p>{{temp.article.content}}</p>
+            <div class="profile-topic-tag-links">
+                {%for tag in temp.tags %}
+                <a href="/articles/tags/{{tag.hashtag}}">{{tag.hashtag}}</a>
+                {%endfor%}
+            </div>
+        </div>
+        {%endfor%}
+        {%else%}
+        <p style="text-align: center;margin: 5rem auto;color: red;">No article contrubuted by {{user1.username}} </p>
+        {%endif%}
+    </div>
+            
+{%endblock%}

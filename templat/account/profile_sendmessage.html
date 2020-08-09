@@ -1,0 +1,28 @@
+{% extends 'account/profilebase.html'%}
+
+{% block user-data-container %}
+<div class="write-article-div" style="background: white;padding: 1rem;border-radius: 1rem; width: 100%;">
+    {%for m in messages%}
+    <p style="text-align:center;color: red;">{{m}}</p>
+    {%endfor%}
+
+    <form action="/account/{{user.username}}/{{reciver}}/sendmessage" onsubmit="return validatemessage(this.content.value)" method="POST">
+        {%csrf_token %}
+        <p><span style="color: green;">Sender:{{user.username}}</span>          <span style="margin-left: 5rem;color: red;">Reciver:{{reciver}}</span></p>
+    <textarea name="content"  cols="30" rows="20" placeholder="write your views here..." required style="width: 100%;border: 5px solid #1b2b3c;border-radius: 1rem;padding: .5rem;resize: none;"></textarea><br>
+    
+    <button type="submit" style="padding: .8rem 1rem;border-radius: 0.5rem;margin-left: auto;display: block;background: #1b2b31;color: white;" >Send Message</button>
+    </form>
+    
+</div>
+<script>
+    function validatemessage(text){
+        if(text.length<250){
+            return true;
+        }else{
+            alert("message size should be less then 250");
+            return false;
+        }
+    }
+</script>            
+{%endblock%}

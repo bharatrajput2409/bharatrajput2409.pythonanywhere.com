@@ -1,0 +1,38 @@
+{% extends 'account/base.html'%}
+{%load static %}
+{%block title%}
+<title>{{subject.name}}</title>
+{%endblock%}
+{% block content%}
+<div class="container-article">
+       <div class="subject-topic-list">
+        <h1 style="text-align: center;text-transform: uppercase;">{{subject.name}}</h1>
+        <p style="margin: 1rem 0;">{{subject.intro}}</p>
+        <p style="color: red;">easy topic for {{subject}}</p>
+        {%if easytopic%}
+        {%for topic in easytopic%}
+        <P style="margin: 1rem 1rem;">{{forloop.counter}}. <a href="/subject/{{subject.name}}/{{topic.id}}">{{topic.heading}}</a></P>   
+        {%endfor%}
+        {%else%}
+        <p style="margin: 1rem;">No topic available.We are working on it</p>
+        {%endif%}
+        <p style="color: red;">medium topic for {{subject}}</p>
+        {%if mediumtopic%}
+        {%for topic in mediumtopic%}
+        <P style="margin: 1rem 1rem;">{{forloop.counter}}. <a href="/subject/{{subject.name}}/{{topic.id}}">{{topic.heading}}</a></P>   
+        {%endfor%}
+        {%else%}
+        <p style="margin: 1rem;">No topic available.We are working on it</p>
+        {%endif%}
+        <p style="color: red;">hard topic for {{subject}}</p>
+        {%if mediumtopic%}
+        {%for topic in hardtopic%}
+        <P style="margin: 1rem 1rem;">{{forloop.counter}}. <a href="/subject/{{subject.name}}/{{topic.id}}">{{topic.heading}}</a></P>   
+        {%endfor%}
+        {%else%}
+        <p style="margin: 1rem;">No topic available.We are working on it</p>
+        {%endif%}
+       </div>  
+    
+</div>
+{%endblock %}

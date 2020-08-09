@@ -1,0 +1,148 @@
+{% extends 'account/base.html'%}
+{%load static %}
+{%block title%}
+<title>Article</title>
+<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" >
+{%endblock%}
+{% block content%}
+<div class="container-article">
+       <div id="likedata" style="display: ;"></div>
+       <div class="subject-topic-list-topic">
+       <p style="text-align: center;color: green;font-size: 1.5rem;text-transform: uppercase;font-weight: 600;">{{topicdetail.article.heading}}</p>
+       <p >{{topicdetail.article.content}}</p>
+       <p style="margin:2rem 0">Subject tag: <a href="/subject/{{topicdetail.article.subject}}">{{topicdetail.article.subject}}</a></p>
+       <div>Hash tags:
+       {%for tag in topicdetail.tags%}
+        <a href="/topics/tags/{{tag.hashtag}}" >{{tag.hashtag}}</a>
+       {%endfor%}
+       </div>
+        <p style="margin: 2rem 0;">Difficulty level: {{topicdetail.article.level}}</p>
+        <div class="hit-like-dislike" >
+               <input type="hidden" id="liked-status" value="{{topicdetail.liked}}">
+               <h3 class="current-likes">Likes:{{topicdetail.article.likes}}</h3>
+              <i class="fa fa-thumbs-up" id="l{{topicdetail.article.id}}" onclick="liketopic(this.id)"></i>
+              <i class="fa fa-thumbs-down" id="d{{topicdetail.article.id}}" onclick="disliketopic(this.id)"></i>
+              <div id="login-to-hit-like" style="color: red;"></div>
+              <div class="view-add-comments">
+                     <button id="{{topicdetail.article.id}}" class="solution" onclick="viewcomments(this.id)">View comments</button>
+              </div>
+        </div>
+        <div class="material-solution-comments-{{topicdetail.article.id}}">
+            
+       </div>
+        
+       </div>  
+    <script>
+       function viewcomments(clicked){
+       document.getElementById(clicked).style.display="none";
+       var commentcontainer=document.getElementsByClassName("material-solution-comments-"+clicked)[0];
+       temp= new XMLHttpRequest();
+       var url="/ajex/topic/comments/view/"+clicked ;
+       temp.open("GET",url,true);
+       temp.onload = function(){
+              if(this.status==200){
+              
+              var comments=JSON.parse(this.responseText);
+              
+              var output='<div class="comment-container" style="width:100%"><div class="comment"><form action="/account/subjectcommentswrite" method="GET" onsubmit="return postcomment(this.id.value,this.content.value,'+clicked+')">'+
+                     '<textarea name="content"   rows="3" placeholder="write a comment here" required></textarea>'+
+                     '<input type="hidden"  value="'+clicked+'" name="id">'+
+                     '<input type="submit" value="Post">'+
+                     '</form><div style="color:red;" id="login to post comment"></div></div>';
+              if(JSON.parse(comments["comments"].length)){
+                     for( var i in comments["comments"]){
+                     
+                     output+=
+                     '<div class="comment"><p style="font-size:1rem;"><a href="/account/'+JSON.parse(comments["comments"][i]).writer+'/dashboard" style="font-size:1rem;background:white;"><span>'+JSON.parse(comments["comments"][i]).writer+'</span></a>  <span>'+JSON.parse(comments["comments"][i]).datetime+'</span></p>'+
+                     '<hr style="width: 90%; margin: 0.5rem auto;"><p style="margin-left:4rem;font-size:1.2rem;">'+JSON.parse(comments["comments"][i]).content+'</p></div>';
+                     }
+              
+                     
+              }
+              commentcontainer.innerHTML=output;
+              
+              }
+              
+       }
+       temp.onerror=function(){
+              alert("could not load comments");
+       }
+       temp.send()
+       }
+       function postcomment(a,b,solutionid){
+       
+       var url="/ajex/topic/comments/write?content="+b+"&topicid="+a;
+       temp=new XMLHttpRequest()
+       temp.open("GET",url,true);
+       temp.onload=function(){
+              if( this.status==200){
+                     if(this.responseText=="login to post comment"){
+                            document.getElementById("login to post comment").innerHTML="login to post comment";
+                     }else{
+                            viewcomments(solutionid);
+                     }
+              
+              }
+       }
+       temp.send();
+       return false;
+       }
+           var likedstatus=document.getElementById("liked-status");
+           var like=document.getElementsByClassName("fa fa-thumbs-up")[0];
+           var dislike=document.getElementsByClassName("fa fa-thumbs-down")[0];
+           function likedstatuscheck(){
+              if(likedstatus.value=="l"){
+                     like.style.color="red";
+                     
+              }else if(likedstatus.value=="d"){
+                     dislike.style.color="red";
+              }
+              
+           }
+           
+           var currentlike=document.querySelector(".current-likes");
+           
+           function liketopic(id){
+              var temp=id.substr(1);
+              console.log(temp);
+              var xmlhttp=new XMLHttpRequest();
+              xmlhttp.onload=function(){
+                     if(this.status==200){
+                            if(this.responseText=="login to hit like"){
+                                   document.getElementById("login-to-hit-like").innerHTML=this.responseText;
+                                   
+                            }else{
+                                   console.log(xmlhttp.responseText +"temp");
+                                   like.style.color="red";
+                                   dislike.style.color="#1b2b40"
+                                   currentlike.innerHTML="Likes:"+ xmlhttp.responseText;
+                            }
+                            
+                     }
+              };
+              xmlhttp.open("GET",'/ajex/like/topic/'+temp,true);
+              xmlhttp.send()
+           };
+           function disliketopic(id){
+              var temp=id.substr(1);
+              console.log(temp);
+              var xmlhttp=new XMLHttpRequest();
+              xmlhttp.open("GET",'/ajex/dislike/topic/'+temp,true);
+              xmlhttp.onload=function(){
+              if(this.responseText=="login to hit dislike"){
+                     document.getElementById("login-to-hit-like").innerHTML=this.responseText;
+                     
+              }else{
+                     dislike.style.color="red";
+                     like.style.color="#1b2b40"
+                     currentlike.innerHTML="Likes:"+ xmlhttp.responseText;
+              }
+                     
+              }              
+              xmlhttp.send()
+           }
+           likedstatuscheck();
+           
+    </script>
+</div>
+{%endblock %}

@@ -1,0 +1,99 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" >
+</head>
+<body  onload="loading()">
+    <div class="loading-container" id="loading">
+        <div class="loading">
+        
+            <span style="--i:1">l</span>
+            <span style="--i:2">o</span>
+            <span style="--i:3">a</span>
+            <span style="--i:4">d</span>
+            <span style="--i:5">i</span>
+            <span style="--i:6">n</span>
+            <span style="--i:7">g</span>
+            <span style="--i:8">.</span>
+            <span style="--i:9">.</span>
+            <span style="--i:10">.</span>
+        
+        </div>
+    </div>
+    <script>
+        var loadingc=document.getElementById("loading");
+        function loading(){
+            loadingc.style.display="none";
+        }
+    </script>
+    <div class="profile-links">
+        <div class="profile-image">
+            <img src="{{user2.profileimg.url}}" >
+            <p style="text-align: center; margin: 10px;" id="user-username">{{user1.username}}</p>
+        </div>
+        <div class="profile-link-div"><a href="/account/{{user1.username}}/dashboard">Basic</a></div>
+        <div class="profile-link-div"><a href="/account/{{user1.username}}/feed">Events</a></div>
+        <div class="profile-link-div"><a href="/account/{{user1.username}}/interest">Interest</a></div>
+        <div class="profile-link-div"><a href="/account/{{user1.username}}/articles">Contribution</a></div>
+        
+        
+        {%if user.is_authenticated%}
+        {%if user.username == user1.username %}
+        <div class="profile-link-div"><a href="/account/{{user1.username}}/editprofile">Edit Profile</a></div>
+        <div class="profile-link-div logout"><a href="/account/logout">Logout</a></div>
+        <div class="profile-link-div"><a href="/articles/writetopic">Write topic</a></div>
+        <div class="profile-link-div"><a href="/account/{{user.username}}/viewmessage">View message</a></div>
+        {%else%}
+        <div class="profile-link-div"><a href="/account/{{user.username}}/{{user1.username}}/sendmessage">Drop message</a></div>
+        {%endif%}
+        {%endif%}
+        <div class="profile-link-div"><a href="/">Home page</a></div>
+    </div>
+    <div class="user-details-container">
+        <div class="profile-nav">
+            <div class="hamburger">
+                <div class="line first"></div>
+                <div class="line second"></div>
+                <div class="line third"></div>
+            </div>
+            <div class="username">
+                {{user1.first_name}} {{user1.last_name}}
+            </div>
+            {%if user.is_authenticated and user.username == user1.username%}
+            <div style="margin: 0px 20px;">
+                <i class="fa fa-bell" aria-hidden="true" style="font-size: 3rem;color: white;cursor: pointer;" ></i>
+            </div>
+            {%endif%}
+            
+            <div class="notification-bar-div">
+                <p style="text-align: center;">Notifications</p>
+                <div class="notification-content">
+                    <p>you have new message from <span style="color: green;">ankit gupta</span></p>
+                </div>
+                <div class="notification-content">
+                    <p>you have new message from <span style="color: green;">somesh1714</span></p>
+                </div>
+                <div class="notification-content">
+                    <p>you have new message from <span style="color: green;">saurabhs</span></p>
+                </div>
+                <div class="notification-content">
+                    <p>you have new message from <span style="color: green;">deepak</span></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="user-data-container">
+            {% block user-data-container %}
+            
+            {%endblock%}
+        </div>
+        
+    </div>
+    <script src="{% static 'js/profile.js' %}"></script>
+</body>
+</html>

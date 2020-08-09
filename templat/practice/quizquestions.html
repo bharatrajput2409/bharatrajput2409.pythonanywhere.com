@@ -1,0 +1,95 @@
+{% extends 'account/base.html'%}
+{%block title%}
+<title>Practice quiz</title>
+{%endblock%}
+{% block content%}
+<div class="quiz-question-container">
+<div class="question-index">
+    <p style="text-align: center;margin: 2rem 0;">Quiz questions</p>
+<div class="index-container">
+    {% for q in questionid %}
+    <div class="index" id="{{q.id}}" onclick="loadquestion(this.id)">{{forloop.counter}}</div>
+    {%endfor%}
+    
+    
+</div>
+<button onclick="finishquiz()">Finish Quiz</button>
+</div>
+<div class="question-content">
+    <div id="question-id-container" style="display:none ;">{{question.id}}</div>
+    <p style="margin: 4rem 0 2rem 1rem;" id="question-heading" >Q.{{question.content}}</p>
+    <input type="radio" value="a" name="a">
+    <label for="a">A.{{question.option1}}</label><br>
+    <input type="radio" value="b" name="a">
+    <label for="a">B.{{question.option2}}</label><br>
+    <input type="radio" value="c" name="a">
+    <label for="a">C.{{question.option3}}</label><br>
+    <input type="radio" value="d" name="a">
+    <label for="a">D.{{question.option4}}</label>
+    <br>
+    <button  onclick="submitquestion()" >Submit</button>
+    <div id="submission-status" style="text-align:center;color:green;font-size: 1.5rem;"></div>
+</div>
+</div>    
+<script>
+    var options=document.getElementsByTagName("input");
+    function submitquestion(){
+        var id=document.getElementById("question-id-container").innerText;
+        console.log(id);
+        
+        for(var i in options){
+            if(options[i].checked){
+                var ans=options[i].value;
+                
+            }
+        }
+        var url='/practice/ajex/question/'+id+'/submit?ans='+ans;
+        var temp=new XMLHttpRequest();
+        temp.open("GET",url,true);
+        temp.onload=function(){
+            if(temp.status==200){
+                document.getElementById("submission-status").innerText=this.responseText;
+                document.getElementById(id).style.background="#e84e10"
+            }
+        }
+        temp.send()
+    }
+    function loadquestion(id){
+        console.log(id);
+        var url='/practice/ajex/question/'+id+'/loadquestion';
+        var temp=new XMLHttpRequest();
+        temp.open("GET",url,true);
+        temp.onload=function(){
+            if(this.status==200){
+                var output=JSON.parse(this.responseText);
+                console.log(output["question"]);
+                if(this.responseText=="Opps something went wrong...kindly refresh the page..."){
+                    document.getElementById("submission-status").innerText=this.responseText;
+                }else{
+                    document.getElementById("question-id-container").innerText=id;
+                    var label=document.getElementsByTagName("label");
+                    document.getElementById("question-heading").innerText="Q. "+output["question"]["content"];                    
+                    label[0].innerText="A."+output["question"]["option1"];
+                    label[1].innerText="B."+output["question"]["option2"];
+                    label[2].innerText="C."+output["question"]["option3"];
+                    label[3].innerText="D."+output["question"]["option4"];
+                    document.getElementById("submission-status").innerText="";
+                    for(var i in options){
+                    options[i].checked=false;
+                    }
+                }
+            }
+        }
+        temp.send()
+    }
+    function finishquiz(){
+        if(confirm("This will end quiz and generate quiz report")){
+            temp=new XMLHttpRequest();
+            temp.open("GET",'quizreport',true);
+            temp.send();
+        }else{
+            console.log("Not submitted");
+        }
+    }
+</script>
+{%endblock %}

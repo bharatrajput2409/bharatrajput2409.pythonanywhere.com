@@ -1,0 +1,144 @@
+{% extends 'account/base.html'%}
+{%block title%}
+<title>Course</title>
+<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" >
+{%endblock%}
+{% block content%}
+<div class="container-community-coursecode">
+    <p style="text-align: center; font-size: 2rem;font-weight: 600;color: #1b2b40;">Study material for {{ccode}}</p>
+    <div class="upload-material">
+        Upload:
+        <form action="/courses/subjectmaterial/uploadmaterial" onsubmit="return validatefileformate()" method="POST" enctype="multipart/form-data">
+            {%csrf_token%}
+            <input type="text" name="heading" class="heading" placeholder="heading(i.e 2020-odd-mid-sem-paper)">
+            <input type="file" name="file" id="file-to-be-uploaded">
+            <input type="text" value="{{ccode}}" name="ccode" hidden>
+            <input type="submit" value="Submit">
+            <a class="upload-button" style="background-color: white;color: black;padding: .5rem 1rem;border-radius: 1rem;margin-left: 1rem;" href="#">Cancle</a>
+        </form>
+    </div>
+    <div class="upload-button">
+        <a id="upload-button" href="#">Upload</a>
+    </div>
+    {%if coursematerial %}
+    {%for m in coursematerial %}
+    <div class="material-container">
+        <div class="left">
+            <a href="{{m.img.url}}" download><img class="img_mat" class="uploaded-images" src="{{m.img.url}}" alt="click to view pdf"></a>          
+            
+        </div>
+        <div class="right">
+            <p>{{m.heading}}</p>
+            <p>Uploader: <a href="/account/{{m.uploader}}/dashboard">{{m.uploader}}</a></p>
+            <p>Uploaded on:{{m.date}}</p>
+            <a href="/courses/subjectmaterial/{{ccode}}/{{m.id}}" class="solution">View solutions</a>
+        </div>
+    </div>
+    {%endfor%}
+    <button id="{{ccode}}" class="solution" style="margin: 1rem auto;display: block;padding: .5rem 1rem;border-radius: 1rem;background: #1b2b40;color: white;" onclick="viewcomments(this.id)">View comments</button>
+    {%else%}
+    <p style="text-align:center;margin-top: 10rem;color: red;">No Material is Uploaded.Upload one with aboue Button</p>
+    {%endif%}
+    
+    <div class="comment-container">
+        <div class="material-solution-comments-{{ccode}}">
+        </div>
+    </div>
+    <script>
+    function viewcomments(clicked){
+    document.getElementById(clicked).style.display="none";
+    var commentcontainer=document.getElementsByClassName("material-solution-comments-"+clicked)[0];
+    temp= new XMLHttpRequest();
+    console.log(clicked)
+    var url="/courses/ajex/subjectmaterial/commentview/"+clicked ;
+    temp.open("GET",url,true);
+    temp.onload = function(){
+        if(this.status==200){
+        
+        var comments=JSON.parse(this.responseText);
+        
+        var output='<div class="comment-container" style="width:100%"><div class="comment"><form action="/account/subjectcommentswrite" method="GET" onsubmit="return postcomment(this.id.value,this.content.value,'+clicked+')">'+
+                '<textarea name="content"   rows="3" placeholder="write a comment here" required></textarea>'+
+                '<input type="hidden"  value="'+clicked+'" name="id">'+
+                '<input type="submit" value="Post">'+
+                '</form><div style="color:red;" id="login to post comment-'+clicked +'" ></div></div>';
+        if(JSON.parse(comments["commentlist"].length)){
+                for( var i in comments["commentlist"]){
+                
+                output+=
+                '<div class="comment"><p style="font-size:1rem;"><a href="/account/'+JSON.parse(comments["commentlist"][i]).writer+'/dashboard" style="font-size:1rem;background:white;"><span>'+JSON.parse(comments["commentlist"][i]).writer+'</span></a>  <span>'+JSON.parse(comments["commentlist"][i]).datetime+'</span></p>'+
+                '<hr style="width: 90%; margin: 0.5rem auto;"><p style="margin-left:4rem;font-size:1.2rem;">'+JSON.parse(comments["commentlist"][i]).content+'</p></div>';
+                }
+        
+                
+        }
+        commentcontainer.innerHTML=output;
+        
+        }
+        
+    }
+    temp.onerror=function(){
+        alert("could not load comments");
+    }
+    temp.send()
+    }
+
+    function postcomment(a,b,ccode){
+        console.log(a)
+    
+    var url="/courses/ajex/subjectmaterial/commentupload/?content="+b+"&ccode="+a;
+    temp=new XMLHttpRequest()
+    temp.open("GET",url,true);
+    temp.onload=function(){
+            if( this.status==200){
+                if(this.responseText=="login to post comments"){
+                    document.getElementById("login to post comment-"+a).innerHTML="login to post comments"
+                }else{
+                    viewcomments(a);  
+                }
+            
+            }
+    }
+    temp.send();
+    return false;
+    }
+    var uploadbutton=document.getElementById("upload-button");
+    var uploadbutton2=document.getElementsByClassName("upload-button")[0];
+    var heading=document.getElementsByClassName("heading")[0];
+    uploadbutton2.addEventListener("click",function(){
+    uploadbutton.innerText="Upload";
+    document.getElementsByClassName("upload-material")[0].style.display="none";
+    })
+
+    uploadbutton.addEventListener("click",function(){
+    if(uploadbutton.innerText=="Upload"){
+    uploadbutton.innerText="Cancle";
+    document.getElementsByClassName("upload-material")[0].style.display="block";
+    }else{
+    uploadbutton.innerText="Upload";
+    document.getElementsByClassName("upload-material")[0].style.display="none";
+    }
+    })
+    var heading=document.getElementsByClassName("heading")[0];
+    var filetobeuploaded=document.getElementById("file-to-be-uploaded").value;
+    var regx=/(\.jpg|\.jpeg|\.pdf|\.gif|\.png)$/i;
+    function validatefileformate(){
+    if(heading.value==""){
+    alert("heading can't be empty !");
+    return false;
+    }
+    alert(regx.test(filetobeuploaded));
+    if(!regx.exec(filetobeuploaded)){
+    alert("invalid file formate ! use pdf,jpg,jpeg,png");
+    return false;
+    }else{
+
+    return true;
+    }
+
+    }
+    
+            
+    </script>
+</div>
+{%endblock %}

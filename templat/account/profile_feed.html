@@ -1,0 +1,19 @@
+{% extends 'account/profilebase.html'%}
+
+{% block user-data-container %}
+<p style="text-align: center;width: 100%;">New Event</p>
+    <div class="profile-feed-container">
+        {%for temp in eventlist %}
+        <div class="profile-feed-div">
+            <p>{{temp.article.heading}}</p>
+            <p>{{temp.article.content}}</p>
+            <div class="profile-topic-tag-links">
+                {%for tag in temp.tags %}
+                <a href="/articles/tags/{{tag.hashtag}}">{{tag.hashtag}}</a>
+                {%endfor%}
+            </div>
+        </div>
+        {%endfor%}        
+    </div>
+            
+{%endblock%}

@@ -1,0 +1,124 @@
+{%load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% block title %}
+    {% endblock%}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body onload="loading()">
+    <div class="loading-container" id="loading">
+        <div class="loading">
+        
+            <span style="--i:1">l</span>
+            <span style="--i:2">o</span>
+            <span style="--i:3">a</span>
+            <span style="--i:4">d</span>
+            <span style="--i:5">i</span>
+            <span style="--i:6">n</span>
+            <span style="--i:7">g</span>
+            <span style="--i:8">.</span>
+            <span style="--i:9">.</span>
+            <span style="--i:10">.</span>
+        
+        </div>
+    </div>
+    <div class="about-us-section">
+        <a href="/aboutus">about us</a>
+        <a href="#">How to use OpNoob</a>
+    </div>
+    <nav>
+        <div class="hamburger">
+            <div class="line first"></div>
+            <div class="line second"></div>
+            <div class="line third"></div>
+        </div>
+        <div class="web-logo">OpNoob</div>
+        <div class="nav-links">
+            <ul class="base-ul">
+                <li><a href="/">Home</a></li>
+                <li ><a href="#" class="practice-links-anchor" >Practice</a>
+                    <div class="practice-links-div">
+                        <ul>
+                            <li><a href="/practice/contest">contest</a></li>
+                            <li><a href="/practice/topics"><p>Solve questions</p></a></li>
+                            <li><a href="/practice/quizzes">quizzes</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li><a href="/articles">articles</a></li>
+                <li><a href="/courses">courses</a></li>
+                <li style="width:8rem"><a href="/community" >Noob Community</a></li>
+                
+            </ul>
+        </div>
+        
+        <div class="login-button">
+            {% if user.is_authenticated %}
+            <a href="#" class="logedin-user-username">{{user.username}}</a>
+            {%else%}
+            <a href="/account/login">Login</a>
+            {%endif%}
+        </div>
+        
+        <div class="userprofile">
+            <ul>
+                <li><a href="/account/{{user.username}}/dashboard">view profile</a></li>
+                <li><a href="/account/logout">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="content">
+    {% block content%}
+    
+    {%endblock %}
+    </div>
+    <div class="footer">
+        <p style="text-align: center;padding: 1rem;">Developed by an OpNoob</p>
+    </div>
+
+    <script>
+        var loadingc=document.getElementById("loading");
+        function loading(){
+            loadingc.style.display="none";
+        }
+        var hamburger= document.getElementsByClassName("hamburger")[0];
+        var navlinks=document.getElementsByClassName("nav-links")[0];
+        var hamburgerlines=document.getElementsByClassName("line");
+
+        hamburger.addEventListener("click",function(){
+            navlinks.classList.toggle("open");
+            hamburgerlines[0].classList.toggle("open");
+            hamburgerlines[1].classList.toggle("open");
+            hamburgerlines[2].classList.toggle("open");
+        });
+        var practicelinks =document.getElementsByClassName("practice-links-div")[0];
+        var practiceanchortag= document.getElementsByClassName("practice-links-anchor")[0];
+        
+
+        
+        practiceanchortag.addEventListener("click",function(){
+            practicelinks.classList.toggle("open");
+            
+            
+        });
+        var profile=document.getElementsByClassName("logedin-user-username");
+        var userprofile=document.getElementsByClassName("userprofile");
+        profile[0].addEventListener("click",function(){
+            userprofile[0].classList.toggle("open");
+        });
+        var body=document.getElementsByClassName("content")[0];
+        body.addEventListener("click",function(){
+            console.log("hi");
+            navlinks.classList.remove("open");
+            hamburgerlines[0].classList.remove("open");
+            hamburgerlines[1].classList.remove("open");
+            hamburgerlines[2].classList.remove("open");
+            practicelinks.classList.remove("open");
+            userprofile[0].classList.remove("open");
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+{% extends 'account/profilebase.html'%}
+
+{% block user-data-container %}
+        
+            <div class="user-info">
+                <p><span style="margin-right: 50px;">Name</span> <span>{{user1.first_name}} {{user1.last_name}}</span></p>
+                <p><span style="margin-right: 40px;">College</span> <span><a href="https://www.nitk.ac.in/">National institute of technology karnataka</a></span></p>
+                <p><span style="margin-right: 45px;">E-mail</span> <span>{{user1.email}}</span></p>
+                <p><span style="margin-right: 45px;">Rank in college</span> <span>#1</span></p>
+                <p><span style="margin-right: 55px;">Score:</span> <span>{{user2.score}}</span></p>
+                <p><span style="margin-right: 45px;">Ratting:</span> <span>{{user2.ratting}}</span></p>
+                <p><span style="margin-right: 20px;">Submission:</span> <span id="totalsubmission">{{user2.totalsubmission}}</span></p>
+                <p><span style="margin-right: 20px;">Correct Submission:</span> <span id="correctsubmission">{{user2.correctsubmission}}</span></p>
+                
+                
+                
+                
+            </div>
+            <div class="user-problem-solved-pie-chart"  id="piechart">
+                <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+                
+
+                <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+                
+                <script type="text/javascript">
+                // Load google charts
+                google.charts.load('current', {'packages':['corechart']});
+                google.charts.setOnLoadCallback(drawChart);
+                
+                // Draw the chart and set the chart values
+                function drawChart() {
+                  var data = google.visualization.arrayToDataTable([
+                  ['Task', 'prblem solved status'],
+                  ['level 1', 8],
+                  ['level 2', 2],
+                  ['level 3', 4],
+                  
+                ]);
+                
+                  // Optional; add a title and set the width and height of the chart
+                  var options = {'title':'Total problem solved', 'width':400, 'height':250};
+                
+                  // Display the chart inside the <div> element with id="piechart"
+                  var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+                  chart.draw(data, options);
+                }
+                </script>
+            </div>
+            <div class="problem-solved-list">
+                <div class="accuracy-bar-div"><p > <span style="margin: 0 1rem;">Accuracy: <span class="assuracy-value"></span></span></p><div id="accuracypercent"></div></div>
+                <div class="problem-list">
+                    {%if problemlist%}
+                    {%for list in problemlist%}
+                    <p>{{list.heading}}</p>
+                    {%endfor%}
+                    {%else%}
+                    <p style="text-align: center; margin-top: 4rem; color: red;">You have not solved any question</p>
+                    {%endif%}
+                </div>
+                
+            </div>
+            <div class="tips">
+                <p style="text-align: center;line-height: 20px;"><span style="color: red;">Tip:</span>{{tip}}</p>
+            </div>
+            <script>
+                var assuracyvalue=document.getElementsByClassName("assuracy-value")[0];
+                var totalsubmission=document.getElementById("totalsubmission").innerText;
+                var correctsubmission=document.getElementById("correctsubmission").innerText;
+                var k=100;
+                if(totalsubmission!=0){
+                    k=(correctsubmission/totalsubmission)*100
+                }
+                assuracyvalue.innerText=k+"%";
+                var interval=setInterval(widthchange,2000);
+                var width=5;
+            function widthchange(){
+                var accuracypercent=document.getElementById("accuracypercent");
+                accuracypercent.style.width=k+'%';       
+                console.log(accuracypercent.style.width);
+                    width+=20;
+                    
+                    clearInterval(interval);
+                    
+            }
+                
+            </script>
+        
+        {%endblock%}

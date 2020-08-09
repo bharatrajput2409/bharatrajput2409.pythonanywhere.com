@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" >
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body{
+            width: 100%;
+            height: 100%;
+
+        }
+        .container{
+            display: flex;
+            height: 100vh;
+            
+        }
+        .centre{
+            width: 25rem;
+            
+            margin: auto;
+        }
+        .fa{
+            font-size: 20rem;
+            color: red;
+            margin:0 4rem ;
+            
+        }
+        .fa{
+            transform: rotateZ(0deg);
+            transition: transform 3000ms ease;
+            
+        }
+        .fa.open{
+            transform: rotate(-360deg);
+            
+        }
+        p{
+            text-align: center;
+            font-size: 2rem;
+        }
+        .button{
+            margin: 1rem 0;
+        }
+        .button a{
+            display: block;
+            margin: 0 auto;
+            width: 12rem;
+            border-radius: 1rem;
+            text-align: center;
+            padding: 1rem 2rem;
+            background: #1b2b40;
+            color: white;
+            text-decoration: none;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="centre">
+            <div class="rotatediv open" >
+                <i class="fa fa-bug" ></i>
+            </div>
+            <p>NO CONTENT FOUND AT THIS URL</p>
+            <div class="button">
+                <a href="/">Go to Home page</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+
+        
+        var gear =document.getElementsByClassName("fa");
+        setInterval(rotate,4000)
+        function rotate(){
+            console.log("hi")
+            gear[0].classList.toggle("open");
+        };
+    </script>
+</body>
+</html>

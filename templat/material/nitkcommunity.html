@@ -1,0 +1,205 @@
+{% extends 'account/base.html'%}
+{%block title%}
+<title>NITK Community</title>
+<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" >
+{%endblock%}
+{% block content%}
+<div class="container-community">
+    <div class="search-for-coursecode">
+        <form action="/courses/subjectmaterial" method="GET" onsubmit="return validateccode(this.ccode.value)">
+            {%csrf_token%}
+            <input type="text" class="course-code-input" name="ccode" placeholder="Course code i.e cv250" required>
+            <button type="submit">Search</button>
+            <i class="fa fa-question-circle" aria-hidden="true"></i>
+            
+        </form>
+    </div>
+    <div class="ask-questions-or-view">
+        <div class="comment-container" style="width: 100%;">
+            {%for m in messages%}
+            <p style="text-align: center;">{{m}}</p>
+            {%endfor%}
+            <div class="comment">
+                <form action="/community/addquestion" method="GET">                   
+                <textarea name="content"   rows="3" placeholder="Ask a quesiton here"></textarea>
+                <div class="input-div">
+                    <input type="text" name="hashtag" autocomplete="off" required class="hashtag">
+                    <label for="hashtag"><span class="label-span">Hashtag</span></label>
+                </div>
+                <input type="submit" value="Post">
+                </form>
+            </div>
+            {%for k in questionlist%}
+            <div class="comment" style="width:100%;">
+                <p><a href="/account/{{k.question.writer}}/dashboard"><span>{{k.question.writer}}</span></a>  <span>{{k.question.date}}</span></p>
+                <hr style="width: 90%; margin: 0.5rem auto;">
+                <p style="margin:1rem 0 2rem 2rem;font-weight: 550;font-size: 1.25rem;">Q. {{k.question.content}}</p>
+                {%for t in k.tags%}
+                <a href="/community/tag/{{t.hashtag}}" style="padding: 0.5rem 1rem; background: grey;margin:  1rem;border-radius: 1rem;color: white;">{{t.hashtag}}</a>
+                
+                {%endfor%}
+                <div class="like-comment" style="margin: 1rem;">
+                    <div class="like-logo">
+                        <span class="current-likes-{{k.question.id}}">Likes {{k.question.likes}}</span>
+                        <i class="fa fa-thumbs-up" id="l{{k.question.id}}" onclick="likequestion(this.id)"></i>
+                        <i class="fa fa-thumbs-down" id="d{{k.question.id}}" onclick="dislikequestion(this.id)"></i>
+                        <input type="hidden" id="input{{k.question.id}}" class="checkforlike" value="{{k.liked}}" >
+                        <div style="color: red;" id="login-to-hit-like-{{k.question.id}}"></div>
+                    </div>
+                    <div>
+                        <button id="{{k.question.id}}" onclick="loadsolution(this.id)" style="padding: .5rem 1rem; margin-left: auto;display: block;border-radius: .8rem;">Reply</button>
+                    </div>
+                    
+               </div>
+                
+                <div class="material-solution-comments-{{k.question.id}}">
+                </div>
+            </div>
+            
+            {%endfor%}
+        </div>
+    </div>
+</div>
+<script>
+    var checkforlike=document.getElementsByClassName("checkforlike");
+    for(var i in checkforlike){
+        var id=checkforlike[i].id;
+        var temp=id.substr(5);
+        if(checkforlike[i].value=='l'){
+            document.getElementById("l"+temp).style.color="red";
+        }else if(checkforlike[i].value=='d'){
+            document.getElementById("d"+temp).style.color="red";
+        }
+    }
+    function likequestion(id){
+            console.log("in like");
+        var temp=id.substr(1);
+        console.log(temp);
+        var likedstatus=document.getElementById("input"+temp);
+        var like=document.getElementById(id);
+        var dislike=document.getElementById("d"+temp);
+        var currentlike=document.querySelector(".current-likes-"+temp);       
+        if(likedstatus.value=="d" || likedstatus.value=="n"){
+        console.log("loged in ");
+        
+        if (like.style.color!="red"){
+            var xmlhttp=new XMLHttpRequest();
+        xmlhttp.onload=function(){
+
+                if(this.status==200){
+                    if(this.responseText=="login to hit like"){
+                            document.getElementById("login-to-hit-like-"+temp).innerHTML=this.responseText;
+                            
+                    }else{
+                            console.log(xmlhttp.responseText +"temp");
+                            like.style.color="red";
+                            dislike.style.color="#1b2b40"
+                            likedstatus.value="l"
+                            currentlike.innerHTML="Likes "+ xmlhttp.responseText;
+                    }
+                    
+                }
+        };
+        xmlhttp.open("GET",'/ajex/community/question/like/'+temp,true);
+        xmlhttp.send()    
+        }
+        }
+        }
+        function dislikequestion(id){
+            console.log("in dislike");
+        var temp=id.substr(1);
+        var likedstatus=document.getElementById("input"+temp);
+        var like=document.getElementById("l"+temp);
+        var dislike=document.getElementById(id);
+        var currentlike=document.querySelector(".current-likes-"+temp);
+        if (likedstatus.value=="l" || likedstatus.value=="n"){
+            if (dislike.style.color!="red"){
+        var xmlhttp=new XMLHttpRequest();
+        xmlhttp.open("GET",'/ajex/community/question/dislike/'+temp,true);
+        xmlhttp.onload=function(){
+            if(this.status==200){
+                    if(this.responseText=="login to hit dislike"){
+                            document.getElementById("login-to-hit-like-"+temp).innerHTML=this.responseText;
+                            
+                    }else{
+                            console.log(xmlhttp.responseText +"temp");
+                            like.style.color="#1b2b40";
+                            likedstatus.value="d"
+                            dislike.style.color="red";
+                            currentlike.innerHTML="Likes "+ xmlhttp.responseText;
+                    }
+                    
+            }
+        }
+        
+        xmlhttp.send()
+        }
+        }
+        }
+    function validateccode(ccode){
+        if(ccode.length>=30){
+            alert("course code can't be more then 30 character !");
+            return false;
+        }else{
+            return true;
+        }
+
+    }
+    function loadsolution(id){
+        console.log(id);
+        var commentcontainer=document.getElementsByClassName("material-solution-comments-"+id)[0];
+        document.getElementById(id).style.display="none";
+            temp= new XMLHttpRequest();
+            var url="ajex/community/question/solution/"+id;
+            temp.open("GET",url,true);
+            temp.onload = function(){
+                if(this.status==200){
+                    
+                    var comments=JSON.parse(this.responseText);
+                    
+                    var output='<div class="comment-container"><div class="comment"><form action="/account/subjectcommentswrite" method="GET" onsubmit="return postcomment(this.id.value,this.content.value,'+id+')">'+
+                        '<textarea name="content"   rows="3" placeholder="write a comment here" required></textarea>'+
+                        '<input type="hidden"  value="'+id+'" name="id">'+
+                        '<input type="submit" value="Post">'+
+                        '</form><div id="login-to-post-comment-'+id+'" style="color:red;"></div></div>';
+                    
+                    if(JSON.parse(comments["solutionlist"].length)){
+                        for( var i in comments["solutionlist"]){
+                        
+                        output+=
+                        '<div class="comment"><p><a href="/account/'+JSON.parse(comments["solutionlist"][i]).writer+'/dashboard"><span>'+JSON.parse(comments["solutionlist"][i]).writer+'</span></a>  <span>'+JSON.parse(comments["solutionlist"][i]).datetime+'</span></p>'+
+                        '<hr style="width: 90%; margin: 0.5rem auto;"><p style="margin-left:4rem;">'+JSON.parse(comments["solutionlist"][i]).content+'</p></div>';
+                        }
+                    
+                        
+                    }
+                    commentcontainer.innerHTML=output;
+                    
+                }
+                
+            }
+            temp.onerror=function(){
+                alert("could not load comments");
+            }
+            temp.send()
+    }
+    function postcomment(a,b,questionid){
+            
+            var url="ajex/community/question/solutionpost?content="+b+"&questionid="+a;
+            temp=new XMLHttpRequest()
+            temp.open("GET",url,true);
+            temp.onload=function(){
+                if( this.status==200){
+                    if( this.responseText=="login to post comment"){
+                        document.getElementById("login-to-post-comment-"+questionid).innerHTML=this.responseText;
+                    }else{
+                        
+                    loadsolution(questionid);
+                    }
+                }
+            }
+            temp.send();
+            return false;
+        }
+</script>
+{%endblock %}

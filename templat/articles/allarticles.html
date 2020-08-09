@@ -1,0 +1,191 @@
+{% extends 'account/base.html'%}
+{%load static %}
+{%block title%}
+<title>Articles</title>
+<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" >
+{%endblock%}
+{% block content%}
+<div class="container-article">
+    
+    <a href="/articles/write" class="write-article-button">Write Article</a>
+    {%if articlelist%}
+    {%for list in articlelist %}
+    <div class="article-div">
+        <div class="article-username">
+            <a href="/account/{{list.writer.username}}/dashboard" class="view-article-writer-profile">
+                <p>{{list.writer.username}}</p>
+                <img src="{{list.writer.img.url}}"  class="article-writer-img" alt="profile" >
+            </a>
+            
+        </div>           
+       <div class="article-content">
+           <p class="article-heading">{{list.article.heading}} </p>
+           <hr style="margin: 5px;">
+           <p>{{list.article.content}}</p>
+            <div class="subjecttag">
+                # tags:
+                {%for tag in list.tags %}
+                <a href="/articles/tags/{{tag.hashtag}}" style="padding: 0.5rem 0.8rem;background: grey;color: white;border-radius: 1rem;">{{tag.hashtag}}</a>
+                {%endfor%}
+            </div>
+            <div class="like-comment">
+                <div class="like-logo">
+                    <span class="current-likes-{{list.article.id}}">Likes:{{list.article.likes}}</span>
+                    <i class="fa fa-thumbs-up" id="l{{list.article.id}}" onclick="liketopic(this.id)"></i>
+                    <i class="fa fa-thumbs-down" id="d{{list.article.id}}" onclick="disliketopic(this.id)"></i>
+                    <input type="hidden" id="input{{list.article.id}}" class="checkforlike" value="{{list.liked}}" >
+                    <div style="color: red;" id="login-to-hit-like-{{list.article.id}}"></div>
+                </div>
+                <div>
+                    <button id="{{list.article.id}}" class="solution" onclick="viewcomments(this.id)">View comments</button>
+                </div>
+           </div>
+           <div class="material-solution-comments-{{list.article.id}}">
+        </div>
+       </div>       
+    </div>
+    {%endfor %}
+    {%else%}
+    <div style="margin: 5rem;">
+        <p style="text-align: center;">No article found for you.Add some #tag to you favourite list to check-out articles of your interest</p>
+    </div>
+    {%endif%}
+    <script>
+        function liketopic(id){
+            
+        var temp=id.substr(1);
+        var likedstatus=document.getElementById("input"+temp);
+        var like=document.getElementById(id);
+        var dislike=document.getElementById("d"+temp);
+        var currentlike=document.querySelector(".current-likes-"+temp);       
+        if(likedstatus.value=="d" || likedstatus.value=="n"){
+        
+        if(like.style.color!="red"){
+        var xmlhttp=new XMLHttpRequest();
+        xmlhttp.onload=function(){
+                if(this.status==200){
+                    if(this.responseText=="login to hit like"){
+                            document.getElementById("login-to-hit-like-"+temp).innerHTML=this.responseText;
+                            
+                    }else{
+                            
+                            like.style.color="red";
+                            dislike.style.color="#1b2b40"
+                            likedstatus.value="l"
+                            currentlike.innerHTML="Likes:"+ xmlhttp.responseText;
+                    }
+                    console.log("in 200")
+                }
+        };
+        xmlhttp.open("GET",'/articles/ajex/like/tarticle/'+temp,true);
+        xmlhttp.send() 
+        }   
+        }
+            
+        }
+        function disliketopic(id){
+            
+        var temp=id.substr(1);
+        var likedstatus=document.getElementById("input"+temp);
+        var like=document.getElementById("l"+temp);
+        var dislike=document.getElementById(id);
+        var currentlike=document.querySelector(".current-likes-"+temp);
+        if (likedstatus.value=="l" || likedstatus.value=="n"){
+            if (dislike.style.color!="red"){
+        var xmlhttp=new XMLHttpRequest();
+        xmlhttp.open("GET",'/articles/ajex/dislike/tarticle/'+temp,true);
+        xmlhttp.onload=function(){
+                if(this.status==200){
+                    if(this.responseText=="login to hit dislike"){
+                            document.getElementById("login-to-hit-like-"+temp).innerHTML=this.responseText;
+                            
+                    }else{
+                            
+                            like.style.color="#1b2b40";
+                            likedstatus.value="d"
+                            dislike.style.color="red";
+                            currentlike.innerHTML="Likes:"+ xmlhttp.responseText;
+                    }
+                }
+        }
+        
+        xmlhttp.send()
+        }
+        }
+        }
+        var checkforlike=document.getElementsByClassName("checkforlike");
+        for (var i in checkforlike){
+            var temp=(checkforlike[i].id);
+            
+            var id=temp.substring(5);
+            
+            likedstatus=document.getElementById("input"+id);
+            if(likedstatus.value=="l"){
+                var like=document.getElementById("l"+id);
+                    like.style.color="red";
+                    
+            }else if(likedstatus.value=="d"){
+                var dislike=document.getElementById("d"+id);
+                    dislike.style.color="red";
+            }
+        }
+        
+        function viewcomments(id){
+        
+        var commentcontainer=document.getElementsByClassName("material-solution-comments-"+id)[0];
+        document.getElementById(id).style.display="none";
+            temp= new XMLHttpRequest();
+            var url="/articles/ajex/tarticle/viewcomments/"+id
+            temp.open("GET",url,true);
+            temp.onload = function(){
+                if(this.status==200){
+                    
+                    var comments=JSON.parse(this.responseText);
+                    
+                    var output='<div class="comment-container"><div class="comment"><form action="/account/subjectcommentswrite" method="GET" onsubmit="return postcomment(this.id.value,this.content.value,'+id+')">'+
+                        '<textarea name="content"   rows="3" placeholder="write a comment here" required></textarea>'+
+                        '<input type="hidden"  value="'+id+'" name="id">'+
+                        '<input type="submit" value="Post">'+
+                        '</form><div id="login-to-post-comment-'+id+'" style="color:red;"></div></div>';
+                    
+                    if(JSON.parse(comments["commentlist"].length)){
+                        for( var i in comments["commentlist"]){
+                        
+                        output+=
+                        '<div class="comment"><p><a href="/account/'+JSON.parse(comments["commentlist"][i]).writer+'/dashboard"><span>'+JSON.parse(comments["commentlist"][i]).writer+'</span></a>  <span>'+JSON.parse(comments["commentlist"][i]).datetime+'</span></p>'+
+                        '<hr style="width: 90%; margin: 0.5rem auto;"><p style="margin-left:4rem;">'+JSON.parse(comments["commentlist"][i]).content+'</p></div>';
+                        }
+                    
+                        
+                    }
+                    commentcontainer.innerHTML=output;
+                    
+                }
+                
+            }
+            temp.onerror=function(){
+                alert("could not load comments");
+            }
+            temp.send()
+        }
+        function postcomment(a,b,articleid){
+            
+            var url="/articles/ajex/tarticle/writecomments/?content="+b+"&articleid="+a;
+            temp=new XMLHttpRequest()
+            temp.open("GET",url,true);
+            temp.onload=function(){
+                if( this.status==200){
+                    if( this.responseText=="login to post comments"){
+                        document.getElementById("login-to-post-comment-"+articleid).innerHTML=this.responseText;
+                    }else{
+                        
+                        viewcomments(articleid);
+                    }
+                }
+            }
+            temp.send();
+            return false;
+        }
+    </script>
+</div>
+{%endblock %}

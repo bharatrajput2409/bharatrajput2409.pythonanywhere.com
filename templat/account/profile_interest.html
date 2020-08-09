@@ -1,0 +1,91 @@
+{% extends 'account/profilebase.html'%}
+
+{% block user-data-container %}
+    <div style="width: 100%; height: 100%;">
+        <p style="margin: 10px;">Interested Topics |</p>
+        <div class="interested-topics-container">
+            {%for tag in usertaglist %}
+            <a href="#" class="interested-topic-div"><p style="display: flex;">{{tag.hashtag}} <i class="fa fa-user" aria-hidden="true"></i>
+                { {{tag.hashtag.followers}} } <input type="checkbox" class="input" style="display: none;" ></p></a>
+            {%endfor%}
+        </div>
+        <div class="interested-edit-button-div">
+            <button class="interested-edit-button-div button" >Save</button>
+            <button class="interested-edit-button-div button" >Edit</button>
+        </div>
+        
+    </div>
+    <script>
+        var interestededitbutton= document.getElementsByClassName("interested-edit-button-div button");
+        var interestedtopicinput=document.getElementsByClassName("input");
+        var username=document.getElementById("user-username").innerText;
+        var interestedtopicscontainer=document.getElementsByClassName("interested-topics-container")[0];
+        interestededitbutton[1].addEventListener("click",function(){
+            interestededitbutton[1].style.display="none";
+            var temp=new XMLHttpRequest();
+            var url='/account/ajex/'+username+'/interest/loadtag';
+            temp.open("GET",url,true);
+            temp.onload= function(){
+                if(this.status==200){
+                    console.log(this.responseText);
+                    var taglist=JSON.parse(this.responseText);
+                    console.log(taglist);
+                    var output='';
+                    for(var i in taglist['alltaglist']){
+                        console.log(JSON.parse(taglist['alltaglist'][i]).status);
+                        if(JSON.parse(taglist['alltaglist'][i]).status=="0"){
+                            output+='<a href="#" class="interested-topic-div"><p style="display: flex;">'+JSON.parse(taglist['alltaglist'][i]).name+' <i class="fa fa-user" aria-hidden="true"></i>'+
+'{ '+JSON.parse(taglist['alltaglist'][i]).followers+' } <input type="checkbox" class="input" id="'+JSON.parse(taglist['alltaglist'][i]).id+'" ></p></a>'
+                        }else{
+                            output+='<a href="#" class="interested-topic-div" style="background:green;"><p style="display: flex;">'+JSON.parse(taglist['alltaglist'][i]).name+' <i class="fa fa-user" aria-hidden="true"></i>{ '+JSON.parse(taglist['alltaglist'][i]).followers+' } <input type="checkbox" class="input" checked id="'+JSON.parse(taglist['alltaglist'][i]).id+'" ></p></a>'
+                        }
+                        
+                    }
+                    interestedtopicscontainer.innerHTML=output;
+                }
+            }
+            temp.send();
+            if(interestededitbutton[0].style.display=="block"){
+                interestededitbutton[0].style.display="none";
+                for(i=0; i< interestedtopicinput.length ;i++){
+                    interestedtopicinput[i].style.display="none";
+                }
+            }
+            else{
+                interestededitbutton[0].style.display="block";
+                for(i=0; i< interestedtopicinput.length ;i++){
+                    interestedtopicinput[i].style.display="inline";
+                }
+            }
+            
+        });
+        interestededitbutton[0].addEventListener("click",function(){
+            
+            interestededitbutton[0].style.display="none";
+            console.log("in save");
+            var taglist=[]
+            for(var i in interestedtopicinput){
+                if(interestedtopicinput[i].checked){
+                    taglist.push(interestedtopicinput[i].id);                    
+                }
+            }
+            var temp=new XMLHttpRequest();
+            var url='/account/ajex/'+username+'/interest/updatetag?tagid='+JSON.stringify(taglist);
+            temp.open("GET",url,true);
+            temp.onload=function(){
+                if(this.status==200){
+                    
+                    var taglist=JSON.parse(this.responseText);
+                    var output="";
+                    for(var i in taglist['alltaglist']){
+                        output+='<a href="#" class="interested-topic-div"><p style="display: flex;">'+JSON.parse(taglist['alltaglist'][i]).name +' <i class="fa fa-user" aria-hidden="true"></i>{ '+
+                            JSON.parse(taglist['alltaglist'][i]).followers+' }<input type="checkbox" class="input" style="display: none;" ></p></a>'
+                    }
+                    interestedtopicscontainer.innerHTML=output;
+                    interestededitbutton[1].style.display="block";
+                }   
+            }
+            temp.send();
+        });
+    </script>
+{%endblock%}

@@ -1,0 +1,87 @@
+{% extends 'account/base.html'%}
+{%load static %}
+{%block title%}
+<title>Write Articles</title>
+{%endblock%}
+{% block content%}
+<div class="container-article" >
+    {%for m in messages%}
+        {%if m.tags == "error"%}
+        <P style="text-align:center;color:red;">{{m}}</P>
+        {%else%}
+        <P style="text-align:center;color:green">{{m}}</P>
+        {%endif%}
+    {%endfor%}
+    <div class="write-article-div" style="background: white;padding: 5px;border-radius: 1rem;">
+        <form action="/articles/writetopic" onsubmit="return validatearticle()" method="POST">
+            {%csrf_token %}
+            <div class="input-div">
+                <input type="text" name="heading" autocomplete="off" required class="write-article-heading">
+                <label for="heading"><span class="label-span">Heading</span></label>
+            </div>
+        <textarea name="content"  cols="30" rows="20" placeholder="write content here..." required ></textarea><br>
+        <div class="input-div">
+            <input type="text" name="hashtag" autocomplete="off" required class="hashtag">
+            <label for="hashtag"><span class="label-span">Hashtag</span></label>
+        </div>
+        <div class="input-div">
+            <input type="text" name="level" autocomplete="off" required class="level">
+            <label for="level"><span class="label-span">Difficulty level</span></label>
+        </div>
+        <div class="input-div">
+            select subject for topic:
+            <select name="subject" id="write-topic-subject" required >
+                <option selected="" value="" disabled="">select subject</option>
+                {%for subject in subjects%}
+                <option value="{{subject.id}}">{{subject.name}}</option>
+                {%endfor%}
+            </select>
+        </div>
+        <button type="submit" >Post article</button>
+        </form>
+    </div>
+</div>
+<script>
+    var heading=document.querySelector(".write-article-heading");
+    var content=document.querySelector("textarea");
+    var hashtag=document.querySelector(".hashtag");
+    var level=document.querySelector(".level");
+
+    hashtag.addEventListener("focus",function(){
+        console.log("in placeholder");
+        hashtag.setAttribute("placeholder","#array #topcoders #searching #fluidmechanics");
+    });
+    hashtag.addEventListener("focusout",function(){
+        console.log("in placeholder");
+        hashtag.removeAttribute("placeholder");
+    });
+    level.addEventListener("focus",function(){
+        level.setAttribute("placeholder","easy or medium or difficult");
+    });
+    level.addEventListener("focusout",function(){
+        level.removeAttribute("placeholder");
+    });
+    function validatearticle(){
+        var temp=heading.value;
+        if(heading.value.length < 145){
+          if(content.value.length>20){
+            if((hashtag.value.search("#") != -1)&&((hashtag.value.length - hashtag.value.search("#"))>2)){
+                return true;
+            }else{
+                alert("Atleast one hashtag(#) should be included");
+                return false;
+            }
+          }else{
+              alert("Article length should be more then 20 !");
+              
+              return false;
+          }
+        }else{
+            
+            alert("heading length should be less then 100");
+            
+            return false;
+        }
+    };
+</script>
+{%endblock %}
